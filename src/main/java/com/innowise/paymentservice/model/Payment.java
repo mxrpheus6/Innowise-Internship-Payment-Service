@@ -1,6 +1,8 @@
 package com.innowise.paymentservice.model;
 
+import com.innowise.paymentservice.model.enums.Status;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -9,7 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Getter
@@ -17,20 +20,24 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection = "payments")
 public class Payment {
 
     @MongoId
     private String id = UUID.randomUUID().toString();
 
-    @Indexed(unique = true)
+    @Indexed(name = "idx_payments_orderId_unique", unique = true)
     private String orderId;
 
-    @Indexed
+    @Indexed(name = "idx_payments_userId")
     private String userId;
 
-    private String status;
-    private OffsetDateTime timestamp;
+    @Indexed(name = "idx_payments_status")
+    private Status status;
+
+    @Indexed(name = "idx_payments_timestamp")
+    private Instant timestamp;
+
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal paymentAmount;
 
 }
