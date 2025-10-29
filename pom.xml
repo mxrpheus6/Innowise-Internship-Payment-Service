@@ -56,6 +56,10 @@
 			<version>3.12.14</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>

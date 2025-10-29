@@ -3,7 +3,6 @@ package com.innowise.paymentservice.model;
 import com.innowise.paymentservice.model.enums.Status;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
