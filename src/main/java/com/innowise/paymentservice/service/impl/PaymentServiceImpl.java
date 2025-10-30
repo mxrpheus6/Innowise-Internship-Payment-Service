@@ -1,5 +1,6 @@
 package com.innowise.paymentservice.service.impl;
 
+import com.innowise.paymentservice.client.RandomOrgClient;
 import com.innowise.paymentservice.dto.request.PaymentRequest;
 import com.innowise.paymentservice.dto.response.PaymentResponse;
 import com.innowise.paymentservice.dto.response.PaymentSumResponse;
@@ -31,12 +32,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentCreatedEventProducer paymentCreatedEventProducer;
 
+    private final RandomOrgClient randomOrgClient;
+
     @Override
     public PaymentResponse createPayment(PaymentRequest request) {
         Payment payment = paymentMapper.toEntity(request);
 
-        int random = new Random().nextInt();
-        payment.setStatus(random % 2 == 0 ? Status.SUCCESS : Status.FAILED);
+        int random = randomOrgClient.getRandomInteger(0, 1);
+        payment.setStatus(random == 0 ? Status.SUCCESS : Status.FAILED);
 
         payment = paymentRepository.save(payment);
 
