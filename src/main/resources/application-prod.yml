@@ -9,3 +9,11 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+randomorg:
+  api:
+    url: ${RANDOMORG_API_URL}
+
+authservice:
+  api:
+    url: ${AUTHSERVICE_API_URL}

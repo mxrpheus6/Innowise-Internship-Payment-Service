@@ -13,7 +13,7 @@ public class RandomOrgClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${randomorg.api.url:https://www.random.org/integers/}")
+    @Value("${randomorg.api.url}")
     private String apiUrl;
 
     public int getRandomInteger(int min, int max) {

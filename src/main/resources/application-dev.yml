@@ -10,3 +10,10 @@ spring:
   kafka:
     bootstrap-servers: localhost:29092
 
+randomorg:
+  api:
+    url: https://www.random.org/integers/
+
+authservice:
+  api:
+    url: http://host.docker.internal:4001/api/v1/auth/validate
