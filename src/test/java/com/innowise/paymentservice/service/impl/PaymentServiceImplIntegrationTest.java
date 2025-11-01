@@ -10,6 +10,7 @@ import com.innowise.paymentservice.kafka.producer.PaymentCreatedEvent;
 import com.innowise.paymentservice.model.Payment;
 import com.innowise.paymentservice.model.enums.Status;
 import com.innowise.paymentservice.repository.PaymentRepository;
+import com.innowise.paymentservice.service.RandomNumberService;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -38,7 +39,9 @@ import org.testcontainers.utility.DockerImageName;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
                 "randomorg.api.url=mock",
-                "authservice.api.url=mock"
+                "authservice.api.url=mock",
+                "kafka.topics.create-payment=CREATE_PAYMENT",
+                "kafka.topics.create-order=CREATE_ORDER"
         }
 )
 @Testcontainers
@@ -65,14 +68,14 @@ class PaymentServiceImplIntegrationTest {
     private PaymentRepository paymentRepository;
 
     @MockBean
-    private RandomOrgClient randomOrgClient;
+    private RandomNumberService randomNumberService;
 
     private KafkaConsumer<String, PaymentCreatedEvent> consumer;
     private BlockingQueue<ConsumerRecord<String, PaymentCreatedEvent>> records;
 
     @BeforeEach
     void setUp() {
-        when(randomOrgClient.getRandomInteger(0, 1)).thenReturn(0);
+        when(randomNumberService.getRandomInteger(0, 1)).thenReturn(0);
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());

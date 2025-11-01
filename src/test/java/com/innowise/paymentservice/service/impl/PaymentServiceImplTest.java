@@ -18,6 +18,7 @@ import com.innowise.paymentservice.mapper.PaymentMapper;
 import com.innowise.paymentservice.mapper.PaymentSumMapper;
 import com.innowise.paymentservice.model.Payment;
 import com.innowise.paymentservice.repository.PaymentRepository;
+import com.innowise.paymentservice.service.RandomNumberService;
 import org.bson.types.Decimal128;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,14 +36,18 @@ class PaymentServiceImplTest {
 
     @Mock
     private PaymentRepository paymentRepository;
+
     @Mock
     private PaymentMapper paymentMapper;
+
     @Mock
     private PaymentSumMapper paymentSumMapper;
+
     @Mock
     private PaymentCreatedEventProducer paymentCreatedEventProducer;
+
     @Mock
-    private RandomOrgClient randomOrgClient;
+    private RandomNumberService randomNumberService;
 
     @InjectMocks
     private PaymentServiceImpl paymentService;
@@ -68,7 +73,7 @@ class PaymentServiceImplTest {
     @Test
     void givenValidRequest_whenCreatePayment_thenReturnPaymentResponse() {
         when(paymentMapper.toEntity(paymentRequest)).thenReturn(payment);
-        when(randomOrgClient.getRandomInteger(0, 1)).thenReturn(0);
+        when(randomNumberService.getRandomInteger(0, 1)).thenReturn(0);
         when(paymentRepository.save(payment)).thenReturn(payment);
         when(paymentMapper.toResponse(payment)).thenReturn(paymentResponse);
 
