@@ -1,6 +1,5 @@
 package com.innowise.paymentservice.service.impl;
 
-import com.innowise.paymentservice.client.RandomOrgClient;
 import com.innowise.paymentservice.dto.request.PaymentRequest;
 import com.innowise.paymentservice.dto.response.PaymentResponse;
 import com.innowise.paymentservice.dto.response.PaymentSumResponse;
@@ -13,10 +12,10 @@ import com.innowise.paymentservice.model.Payment;
 import com.innowise.paymentservice.model.enums.Status;
 import com.innowise.paymentservice.repository.PaymentRepository;
 import com.innowise.paymentservice.service.PaymentService;
+import com.innowise.paymentservice.service.RandomNumberService;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.Decimal128;
@@ -29,16 +28,14 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentSumMapper paymentSumMapper;
-
     private final PaymentCreatedEventProducer paymentCreatedEventProducer;
-
-    private final RandomOrgClient randomOrgClient;
+    private final RandomNumberService randomNumberService;
 
     @Override
     public PaymentResponse createPayment(PaymentRequest request) {
         Payment payment = paymentMapper.toEntity(request);
 
-        int random = randomOrgClient.getRandomInteger(0, 1);
+        int random = randomNumberService.getRandomInteger(0, 1);
         payment.setStatus(random == 0 ? Status.SUCCESS : Status.FAILED);
 
         payment = paymentRepository.save(payment);

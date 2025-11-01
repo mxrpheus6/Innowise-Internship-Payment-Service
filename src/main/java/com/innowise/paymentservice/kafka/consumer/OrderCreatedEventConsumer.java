@@ -12,7 +12,7 @@ public class OrderCreatedEventConsumer {
 
     private final PaymentService paymentService;
 
-    @KafkaListener(topics = "CREATE_ORDER")
+    @KafkaListener(topics = "${kafka.topics.create-order}")
     public void consume(OrderCreatedEvent event) {
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .orderId(event.getOrderId().toString())

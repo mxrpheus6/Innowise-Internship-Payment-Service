@@ -10,18 +10,19 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
 class AuthTokenFilter extends OncePerRequestFilter {
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     @Value("${authservice.api.url}")
     private String authServiceUrl;
@@ -44,14 +45,15 @@ class AuthTokenFilter extends OncePerRequestFilter {
         try {
             Map<String, String> body = Map.of("token", token);
 
-            TokenValidationResponse validationResponse = restTemplate.postForObject(
-                    authServiceUrl,
-                    body,
-                    TokenValidationResponse.class
-            );
+            TokenValidationResponse validationResponse = restClient
+                    .post()
+                    .uri(authServiceUrl)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .body(TokenValidationResponse.class);
 
             if (validationResponse != null && validationResponse.success()) {
-
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 token, null, Collections.emptyList()
