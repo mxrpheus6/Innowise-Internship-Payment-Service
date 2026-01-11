@@ -1,2 +1,22 @@
 server:
   port: 4003
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongo:mongo@localhost:27017/paymentdb?authSource=admin
+      database: paymentdb
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    topics:
+      create-payment: CREATE_PAYMENT
+      create-order: CREATE_ORDER
+
+randomorg:
+  api:
+    url: https://www.random.org/integers/
+
+authservice:
+  api:
+    url: http://host.docker.internal:4001/api/v1/auth/validate

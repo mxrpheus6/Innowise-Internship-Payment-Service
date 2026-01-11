@@ -1,0 +1,36 @@
+version: '3.8'
+name: payment-service
+
+services:
+  payment-service:
+    build: .
+    container_name: payment_service
+    env_file:
+      - .env
+    ports:
+      - "4003:4003"
+    depends_on:
+      - mongo-db
+    networks:
+      - payment-network
+
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_db
+    environment:
+      MONGO_INITDB_DATABASE: paymentdb
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - payment-network
+
+volumes:
+  mongo_data:
+
+networks:
+  payment-network:
+    driver: bridge

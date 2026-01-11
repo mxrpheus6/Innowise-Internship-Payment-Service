@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
+      http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet id="create_payments_collection" author="your_name">
+    <ext:createCollection collectionName="payments">
+      <ext:options>
+        {
+        validator: {
+        $jsonSchema: {
+        bsonType: "object",
+        required: ["orderId", "userId", "status", "timestamp", "paymentAmount"],
+        properties: {
+        _id: {
+        bsonType: "string",
+        description: "Unique identifier for the payment"
+        },
+        orderId: {
+        bsonType: "string",
+        description: "Unique order identifier",
+        pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        },
+        userId: {
+        bsonType: "string",
+        description: "User identifier",
+        pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        },
+        status: {
+        bsonType: "string",
+        description: "Payment status",
+        minLength: 1,
+        maxLength: 50
+        },
+        timestamp: {
+        bsonType: "date",
+        description: "Payment timestamp"
+        },
+        paymentAmount: {
+        bsonType: "decimal",
+        description: "Payment amount",
+        minimum: 0
+        }
+        }
+        }
+        },
+        validationAction: "warn",
+        validationLevel: "strict"
+        }
+      </ext:options>
+    </ext:createCollection>
+
+    <ext:createIndex collectionName="payments" indexName="orderId_unique_idx">
+      <ext:keys>{ orderId: 1 }</ext:keys>
+      <ext:options>{ unique: true }</ext:options>
+    </ext:createIndex>
+
+    <ext:createIndex collectionName="payments" indexName="userId_idx">
+      <ext:keys>{ userId: 1 }</ext:keys>
+    </ext:createIndex>
+  </changeSet>
+</databaseChangeLog>
