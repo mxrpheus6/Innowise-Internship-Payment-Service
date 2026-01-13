@@ -1,0 +1,30 @@
+server:
+  port: 4003
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongo:mongo@localhost:27017/paymentdb?authSource=admin
+      database: paymentdb
+
+kafka:
+  topics:
+    create-payment: CREATE_PAYMENT
+    create-order: CREATE_ORDER
+
+    kafka:
+      topics:
+        create-payment: CREATE_PAYMENT
+
+randomorg:
+  api:
+    url: https://www.random.org/integers/
+
+authservice:
+  api:
+    url: mock
+
+management:
+  zipkin:
+    tracing:
+      endpoint: mock
