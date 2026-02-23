@@ -6,6 +6,12 @@ spring:
     mongodb:
       uri: mongodb://mongo:mongo@localhost:27017/paymentdb?authSource=admin
       database: paymentdb
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            enabled: false
 
 kafka:
   topics:
@@ -28,3 +34,9 @@ management:
   zipkin:
     tracing:
       endpoint: mock
+
+feign:
+  client:
+    config:
+      default:
+        request-interceptors: []  # Disable interceptors
