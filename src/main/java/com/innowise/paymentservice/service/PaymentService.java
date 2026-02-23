@@ -12,4 +12,7 @@ public interface PaymentService {
     List<PaymentResponse> getPaymentsByUserId(String userId);
     List<PaymentResponse> getPaymentsByStatuses(List<String> statuses);
     PaymentSumResponse getTotalSumForPeriod(Instant start, Instant end);
+    PaymentResponse getPaymentByOrderIdAndUserId(String orderId, String userId);
+    List<PaymentResponse> getPaymentsByStatusesAndUserId(List<String> statuses, String userId);
+    PaymentSumResponse getTotalSumForPeriodAndUserId(String userId, Instant start, Instant end);
 }

@@ -19,4 +19,13 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
             "{ $group: { _id: null, total: { $sum: '$paymentAmount' } } }"
     })
     Decimal128 getTotalSumForPeriod(Instant start, Instant end);
+
+    Optional<Payment> findByOrderIdAndUserId(String orderId, String userId);
+    List<Payment> findByStatusInAndUserId(List<String> statuses, String userId);
+
+    @Aggregation(pipeline = {
+            "{ $match: { userId: ?0, timestamp: { $gte: ?1, $lte: ?2 } } }",
+            "{ $group: { _id: null, total: { $sum: '$paymentAmount' } } }"
+    })
+    Decimal128 getTotalSumForPeriodAndUserId(String userId, Instant start, Instant end);
 }

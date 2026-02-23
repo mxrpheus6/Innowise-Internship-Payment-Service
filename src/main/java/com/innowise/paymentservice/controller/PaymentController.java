@@ -8,6 +8,10 @@ import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,30 +28,74 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public PaymentResponse createPayment(@RequestBody @Valid PaymentRequest request) {
-        return paymentService.createPayment(request);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody @Valid PaymentRequest request) {
+        return ResponseEntity.ok(paymentService.createPayment(request));
     }
 
     @GetMapping("/orders/{orderId}")
-    public PaymentResponse getPaymentsByOrderId(@PathVariable String orderId) {
-        return paymentService.getPaymentByOrderId(orderId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PaymentResponse> getPaymentsByOrderId(@PathVariable String orderId) {
+        return ResponseEntity.ok(paymentService.getPaymentByOrderId(orderId));
     }
 
     @GetMapping("/users/{userId}")
-    public List<PaymentResponse> getPaymentsByUserId(@PathVariable String userId) {
-        return paymentService.getPaymentsByUserId(userId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByUserId(@PathVariable String userId) {
+        return ResponseEntity.ok(paymentService.getPaymentsByUserId(userId));
     }
 
     @GetMapping
-    public List<PaymentResponse> getPaymentsByStatuses(@RequestParam List<String> statuses) {
-        return paymentService.getPaymentsByStatuses(statuses);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByStatuses(@RequestParam List<String> statuses) {
+        return ResponseEntity.ok(paymentService.getPaymentsByStatuses(statuses));
     }
 
     @GetMapping("/total")
-    public PaymentSumResponse getTotalSumForPeriod(
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PaymentSumResponse> getTotalSumForPeriod(
             @RequestParam Instant start,
             @RequestParam Instant end) {
-        return paymentService.getTotalSumForPeriod(start, end);
+        return ResponseEntity.ok(paymentService.getTotalSumForPeriod(start, end));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<PaymentResponse>> getCurrentUserPayments(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) List<String> statuses) {
+
+        String userId = jwt.getSubject();
+
+        if (statuses != null) {
+            return ResponseEntity.ok(
+                    paymentService.getPaymentsByStatusesAndUserId(statuses, userId));
+        }
+
+        return ResponseEntity.ok(
+                paymentService.getPaymentsByUserId(userId));
+    }
+
+    @GetMapping("/me/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getMyPaymentByOrderId(
+            @PathVariable String orderId,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String userId = jwt.getSubject();
+
+        return ResponseEntity.ok(
+                paymentService.getPaymentByOrderIdAndUserId(orderId, userId));
+    }
+
+    @GetMapping("/me/total")
+    public ResponseEntity<PaymentSumResponse> getMyTotalSumForPeriod(
+            @RequestParam Instant start,
+            @RequestParam Instant end,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String userId = jwt.getSubject();
+
+        return ResponseEntity.ok(
+                paymentService.getTotalSumForPeriodAndUserId(userId, start, end));
     }
 
 }

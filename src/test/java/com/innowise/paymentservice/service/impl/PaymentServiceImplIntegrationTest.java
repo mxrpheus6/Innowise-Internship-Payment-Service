@@ -3,7 +3,6 @@ package com.innowise.paymentservice.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.innowise.paymentservice.client.RandomOrgClient;
 import com.innowise.paymentservice.constants.TestConstants;
 import com.innowise.paymentservice.dto.request.PaymentRequest;
 import com.innowise.paymentservice.kafka.producer.PaymentCreatedEvent;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -39,6 +39,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Testcontainers
+@WithMockUser(roles = "ADMIN")
 class PaymentServiceImplIntegrationTest {
 
     @Container
@@ -103,14 +104,12 @@ class PaymentServiceImplIntegrationTest {
 
         paymentService.createPayment(request);
 
-        // --- Проверка MongoDB ---
         Payment saved = paymentRepository.findByOrderId(TestConstants.ORDER_ID).orElse(null);
         assertThat(saved).isNotNull();
         assertThat(saved.getUserId()).isEqualTo(TestConstants.USER_ID);
         assertThat(saved.getPaymentAmount()).isEqualTo(TestConstants.PAYMENT_AMOUNT);
         assertThat(saved.getStatus()).isEqualTo(Status.SUCCESS);
 
-        // --- Проверка Kafka ---
         consumer.poll(Duration.ofSeconds(5)).forEach(records::offer);
         assertThat(records).isNotEmpty();
 

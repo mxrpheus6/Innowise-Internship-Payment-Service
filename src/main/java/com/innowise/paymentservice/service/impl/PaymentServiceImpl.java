@@ -73,7 +73,33 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentSumResponse getTotalSumForPeriod(Instant start, Instant end) {
         Decimal128 decimal128 = paymentRepository.getTotalSumForPeriod(start, end);
-        BigDecimal bigDecimal = decimal128.bigDecimalValue();
+
+        BigDecimal bigDecimal = (decimal128 != null)
+                ? decimal128.bigDecimalValue()
+                : BigDecimal.ZERO;
+
+        return paymentSumMapper.toResponse(bigDecimal);
+    }
+
+    public PaymentResponse getPaymentByOrderIdAndUserId(String orderId, String userId) {
+        return paymentRepository.findByOrderIdAndUserId(orderId, userId)
+                .map(paymentMapper::toResponse)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found for this order and user"));
+    }
+
+    public List<PaymentResponse> getPaymentsByStatusesAndUserId(List<String> statuses, String userId) {
+        return paymentRepository.findByStatusInAndUserId(statuses, userId).stream()
+                .map(paymentMapper::toResponse)
+                .toList();
+    }
+
+    public PaymentSumResponse getTotalSumForPeriodAndUserId(String userId, Instant start, Instant end) {
+        Decimal128 decimal128 = paymentRepository.getTotalSumForPeriodAndUserId(userId, start, end);
+
+        BigDecimal bigDecimal = (decimal128 != null)
+                ? decimal128.bigDecimalValue()
+                : BigDecimal.ZERO;
+
         return paymentSumMapper.toResponse(bigDecimal);
     }
 
